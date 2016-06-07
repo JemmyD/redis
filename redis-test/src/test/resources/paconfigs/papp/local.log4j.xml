@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info">
+	<Appenders>
+		<Console name="CONSOLE" target="SYSTEM_OUT">
+			<PatternLayout pattern="[%d{HH:mm:ss.SSS}] [%-3p] %x  %c{1}:  %m%n" />
+		</Console>
+		<Async name="Async">
+			<AppenderRef ref="CONSOLE"/> 
+		</Async>
+	</Appenders>
+
+	<Loggers>
+		<Root level="info" includeLocation="true">
+			<AppenderRef ref="Async" />
+		</Root>
+	</Loggers>
+</Configuration>

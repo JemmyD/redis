@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+		 http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+     <!-- Redis -->
+	 <bean id="sample_redis"
+			class="com.pingan.pafa.redis.RedisFactoryBean">
+			<property name="configureResource" value="${redis.resource}"></property>
+	 </bean>  
+	
+	<!-- redis分布式锁 -->
+	<bean id="lock_factory"
+			class="com.pingan.pafa.redis.lock.RedisLockFactoryImpl">
+			<!-- 命名空间，防Key重复 -->
+			<property name="namespace" value="pafa5_sample_locks"></property>
+			<!-- 锁过期时间，单位:秒 -->
+			<property name="lockExpireTime" value="86400"></property>
+			<property name="redis" ref="sample_redis"></property>
+	</bean> 
+	
+	<!-- Redis分布式缓存 -->
+	<bean id="sample_cache"
+			class="com.pingan.pafa.redis.cache.RedisCacheBean">
+			<!-- 命名空间，防Key重复 -->
+			<property name="namespace" value="pafa5_sample_cache"></property>
+			<!-- cache对象 -->
+			<property name="valueClazz" value="com.pingan.pafa5.sample.redis.UserDTO"></property>
+			<property name="redis" ref="sample_redis"></property>
+	</bean> 
+	
+	<!-- Redis分布式计数器 -->
+	<bean id="sample_counter"
+			class="com.pingan.pafa.redis.counter.RedisIntegerBean">
+			<property name="id" value="pafa5_sample_counter"></property>
+			<property name="redis" ref="sample_redis"></property>
+	</bean> 
+	
+	<!-- Redis分布式HashMap -->
+	<bean id="sample_globalMap"
+			class="com.pingan.pafa.redis.map.RedisMapBean">
+		<!-- 缓存对象ID -->
+		<property name="id" value="pafa5_sample_map"></property>
+		<property name="redis" ref="sample_redis"></property>
+		<!-- Map Key类型 -->
+		<property name="keyClazz" value="java.lang.String"></property>
+		<!-- Map Value类型 -->
+		<property name="valueClazz" value="com.pingan.pafa5.sample.redis.UserDTO"></property>
+	</bean> 
+	
+	
+	<!-- 队列 定义-->
+	<bean id="sample_queue"
+			class="com.pingan.pafa.redis.queue.RedisQueueBean">
+			<property name="redis" ref="sample_redis"></property>
+			<!-- 队列ID，自定义，redis全局唯一 -->
+			<property name="id" value="pafa5_sample_Queue"></property>
+			<!-- 队列存储对象类型 -->
+			<property name="elementClazz" value="com.pingan.pafa5.sample.redis.UserDTO"></property>
+	 </bean>  
+	 
+	 <!-- 队列消费容器 -->
+	 <bean id="receipt_queue_listener_container"
+			class="com.pingan.pafa.redis.queue.ConsumeListenerContainer">
+			<!-- 队列引用 -->
+			<property name="redisQueue" ref="sample_queue"></property>
+			<!-- 消费开关 -->
+			<property name="disabled" value="false"></property>
+			<!-- 消费线程池数量 -->
+			<property name="threadPoolSize" value="${sq.listener.thread.size}"></property>
+			<!-- 队列监听者 -->
+			<property name="consumeListener" ref="queueSampleListener"></property>
+	 </bean>
+	
+	
+</beans>
